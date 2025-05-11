@@ -1,0 +1,128 @@
+﻿@model ToDoManagement.ViewModels.EditTodoViewModel
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-primary">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Edit Todo</h3>
+                </div>
+                <div class="card-body">
+                    <form id="todoForm" asp-action="Edit" method="post">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Title</label>
+                            <input id="Title" asp-for="Title" class="form-control" placeholder="Enter task title" />
+                            <span id="TitleError" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea id="Description" asp-for="Description" class="form-control" rows="3" placeholder="Enter task description"></textarea>
+                            <span id="DescriptionError" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Priority" class="form-label">Priority</label>
+                            <select id="Priority" asp-for="Priority" class="form-select">
+                                @if (Model.Priority.ToString() == "Low")
+                                {
+                                    <option value="Low" selected>Low</option>
+                                }
+                                else
+                                {
+                                    <option value="Low">Low</option>
+                                }
+
+                                @if (Model.Priority.ToString() == "Medium")
+                                {
+                                    <option value="Medium" selected>Medium</option>
+                                }
+                                else
+                                {
+                                    <option value="Medium">Medium</option>
+                                }
+
+                                @if (Model.Priority.ToString() == "High")
+                                {
+                                    <option value="High" selected>High</option>
+                                }
+                                else
+                                {
+                                    <option value="High">High</option>
+                                }
+                            </select>
+
+
+                            <span id="PriorityError" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DueDate" class="form-label">Due Date</label>
+                            <input id="DueDate" asp-for="DueDate" type="date" class="form-control" />
+                            <span id="DueDateError" class="text-danger"></span>
+                        </div>
+                      
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary w-50">Update Todo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#todoForm').on('submit', function (e) {
+            e.preventDefault(); 
+
+            $('.text-danger').text('');
+            let isValid = true;
+
+            if ($('#Title').val() === '') {
+                $('#TitleError').text('Title is required.');
+                isValid = false;
+            } else if ($('#Title').val().length > 100) {
+                $('#TitleError').text('Title cannot exceed 100 characters.');
+                isValid = false;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+
+            if ($('#DueDate').val() !== '' && $('#DueDate').val() < today) {
+                $('#DueDateError').text('Due Date cannot be before today.');
+                isValid = false;
+            }
+
+           if (isValid) {
+                $('#successModal').modal('show');
+
+                setTimeout(function () {
+                    $('#todoForm')[0].submit();
+                }, 3000); 
+            }
+        });
+    });
+</script>
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Todo updated successfully!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
